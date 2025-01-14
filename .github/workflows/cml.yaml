@@ -1,1 +1,23 @@
+name: model-outbreaks
+on: [push]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: iterative/setup-cml@v1
+      - name: Train model
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       
+        run: |
+          pip install -r requirements.txt
+          python train.py
 
+          # Create CML report
+          cat metrics.txt >> report.md
+          echo '![](./feature_importance.png "feature importance")' >> report.md
+          echo '![](./residuals.png "Residuals")' >> report.md
+          cml comment create report.md
+         
